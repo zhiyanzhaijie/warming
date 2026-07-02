@@ -1,0 +1,13 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/domain",
+  "crates/app",
+  "crates/adapters",
+  "crates/infra",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+authors = ["zhiyanzhaijie <zhiyanzhaijie@gmail.com>"]

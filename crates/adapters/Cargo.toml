@@ -1,0 +1,9 @@
+[package]
+name = "adapters"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+app = { path = "../app" }
+domain = { path = "../domain" }
