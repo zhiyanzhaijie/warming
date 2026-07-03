@@ -7,3 +7,8 @@ authors.workspace = true
 [dependencies]
 app = { path = "../app" }
 domain = { path = "../domain" }
+async-trait = "0.1"
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1", features = ["sync"] }
+toasty = { version = "0.7.0", features = ["sqlite", "serde"] }
+toasty-driver-sqlite = "0.7.0"

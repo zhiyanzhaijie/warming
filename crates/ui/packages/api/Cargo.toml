@@ -1,0 +1,12 @@
+[package]
+name = "api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+dioxus = { workspace = true }
+infra = { path = "../../../infra" }
+app = { path = "../../../app" }
+domain = { path = "../../../domain" }
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1", features = ["sync"] }

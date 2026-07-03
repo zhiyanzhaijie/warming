@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use super::{
-    AttemptId, ExerciseId, Judgement, PlayableRange, PracticeSessionId,
-    PracticeSessionStatus,
+    AttemptId, ExerciseId, Judgement, PlayableRange, PracticeSessionId, PracticeSessionStatus,
 };
 use crate::{ArrangementId, BeatSpan, MusicPieceId, Note};
 

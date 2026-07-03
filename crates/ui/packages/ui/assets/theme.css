@@ -1,0 +1,55 @@
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+}
+
+@layer base {
+  :root {
+    --background: #f5f1e8;
+    --foreground: #191713;
+    --card: #fffcf5;
+    --card-foreground: #191713;
+    --primary: #191713;
+    --primary-foreground: #fffcf5;
+    --secondary: rgba(25, 23, 19, 0.05);
+    --secondary-foreground: #191713;
+    --muted: rgba(25, 23, 19, 0.05);
+    --muted-foreground: #686155;
+    --accent: rgba(25, 23, 19, 0.07);
+    --accent-foreground: #191713;
+    --destructive: #b42318;
+    --border: #e7dfd1;
+    --chart-3: #b86b10;
+    --chart-4: #0f7a4d;
+    font-family: "Avenir Next", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  }
+
+  body {
+    background:
+      linear-gradient(90deg, rgba(25, 23, 19, 0.035) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(25, 23, 19, 0.035) 1px, transparent 1px),
+      var(--background);
+    background-size: 44px 44px;
+    color: var(--foreground);
+  }
+
+  button,
+  input,
+  textarea {
+    font-family: inherit;
+  }
+}

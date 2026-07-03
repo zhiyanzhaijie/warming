@@ -1,0 +1,4 @@
+[application]
+name = "Warming"
+tailwind_input = "tailwind.css"
+tailwind_output = "assets/web.css"

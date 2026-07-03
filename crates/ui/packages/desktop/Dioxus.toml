@@ -1,0 +1,7 @@
+[application]
+name = "Warming"
+tailwind_input = "tailwind.css"
+tailwind_output = "assets/desktop.css"
+
+[package]
+productName = "Warming"

@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{
-    ArrangementId, BeatSpan, KeySignature, Meter, MusicPieceId, Pitch, Tempo, Tonality,
-};
+use super::{ArrangementId, BeatSpan, KeySignature, Meter, MusicPieceId, Pitch, Tempo, Tonality};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct MusicPiece {

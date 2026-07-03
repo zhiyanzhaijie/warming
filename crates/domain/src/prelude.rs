@@ -2,8 +2,8 @@
 pub use crate::{
     ArrangementId, AttemptId, BeatPosition, BeatSpan, Exercise, ExerciseId, Judgement,
     JudgementKind, KeySignature, LearningIdInvalidError, Meter, MusicIdInvalidError, MusicPiece,
-    MusicPieceCreated, MusicPieceId, Note, PianoArrangement, PianoScore, Pitch,
-    PitchInvalidError, PlayableRange, PlayableRangeInvalidError, PracticeAttempt,
-    PracticeInstrument, PracticeSession, PracticeSessionId, PracticeSessionStatus, Practiced,
-    ScorePart, Tempo, Tonality, UserPerformance,
+    MusicPieceCreated, MusicPieceId, Note, PianoArrangement, PianoScore, Pitch, PitchInvalidError,
+    PlayableRange, PlayableRangeInvalidError, PracticeAttempt, PracticeInstrument, PracticeSession,
+    PracticeSessionId, PracticeSessionStatus, Practiced, ScorePart, Tempo, Tonality,
+    UserPerformance,
 };
