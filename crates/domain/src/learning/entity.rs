@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use super::{
-    AttemptId, ExerciseId, Judgement, PracticeSessionId, PracticeSessionStatus,
+    AttemptId, ExerciseId, Judgement, PlayableRange, PracticeSessionId,
+    PracticeSessionStatus,
 };
 use crate::{ArrangementId, BeatSpan, MusicPieceId, Note};
 
@@ -22,6 +23,7 @@ pub struct Exercise {
     pub id: ExerciseId,
     pub segment: Option<BeatSpan>,
     pub target_speed: f32,
+    pub playable_range: Option<PlayableRange>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]

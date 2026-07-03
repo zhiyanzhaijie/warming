@@ -5,8 +5,8 @@ pub mod prelude;
 
 pub use learning::{
     AttemptId, Exercise, ExerciseId, Judgement, JudgementKind, LearningIdInvalidError,
-    PracticeAttempt, PracticeSession, PracticeSessionId, PracticeSessionStatus, Practiced,
-    UserPerformance,
+    PlayableRange, PlayableRangeInvalidError, PracticeAttempt, PracticeInstrument,
+    PracticeSession, PracticeSessionId, PracticeSessionStatus, Practiced, UserPerformance,
 };
 pub use music::{
     ArrangementId, BeatPosition, BeatSpan, KeySignature, Meter, MusicPiece, MusicPieceCreated,
