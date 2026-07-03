@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 dioxus = { workspace = true, features = ["router"] }
-ui = { workspace = true }
+ui = { workspace = true, features = ["desktop"] }
 
 [features]
 default = ["desktop"]

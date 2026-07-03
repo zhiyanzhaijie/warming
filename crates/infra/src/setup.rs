@@ -2,11 +2,15 @@
 
 use app::app_error::{AppError, AppResult};
 use app::learning::{LearningCommandHandler, LearningEventHandler, LearningQueryHandler};
-use app::music::{MusicCommandHandler, MusicEventHandler, MusicQueryHandler};
+use app::music::{
+    LocalMidiLibraryHandler, MusicCommandHandler, MusicEventHandler, MusicQueryHandler,
+};
+use std::sync::Arc;
 
 pub struct MusicState {
     pub command: MusicCommandHandler,
     pub query: MusicQueryHandler,
+    pub local_library: LocalMidiLibraryHandler,
 }
 
 pub struct LearningState {
@@ -27,10 +31,20 @@ pub async fn init_app_container(database_url: &str) -> AppResult<AppContainer> {
         .await
         .map_err(AppError::database)?;
 
+    let music_command = MusicCommandHandler::new(repos.music_piece_repo.clone())
+        .with_event_handler(MusicEventHandler::new());
+    let local_midi = Arc::new(adapters::local_midi::LocalMidiFileAdapter::new());
+
     let music = MusicState {
-        command: MusicCommandHandler::new(repos.music_piece_repo.clone())
-            .with_event_handler(MusicEventHandler::new()),
+        command: music_command.clone(),
         query: MusicQueryHandler::new(repos.music_piece_repo.clone()),
+        local_library: LocalMidiLibraryHandler::new(
+            local_midi.clone(),
+            local_midi.clone(),
+            local_midi,
+            repos.music_piece_repo.clone(),
+            music_command,
+        ),
     };
 
     let learning = LearningState {

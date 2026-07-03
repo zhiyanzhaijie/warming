@@ -9,6 +9,7 @@ pub use crate::learning::{
 };
 pub use crate::music::{
     CreateMusicPieceCommand, CreateMusicPieceResult, ImportPianoArrangementCommand,
-    ImportPianoArrangementResult, MusicCommandHandler, MusicEventHandler, MusicPieceRepositoryPort,
-    MusicQueryHandler,
+    ImportPianoArrangementResult, LocalMidiLibraryHandler, LocalMidiScannerPort,
+    LocalMidiScoreParserPort, LocalMidiWatcherPort, MidiScanReport, MusicCommandHandler,
+    MusicEventHandler, MusicPieceRepositoryPort, MusicQueryHandler, RegisterLocalMidiFileCommand,
 };

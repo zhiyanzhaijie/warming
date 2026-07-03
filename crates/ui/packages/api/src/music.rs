@@ -28,6 +28,27 @@ pub struct ArrangementDTO {
     pub tempo_label: String,
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct ScorePreviewDTO {
+    pub piece_id: String,
+    pub arrangement_id: String,
+    pub title: String,
+    pub lowest_pitch: u8,
+    pub highest_pitch: u8,
+    pub total_beats: f32,
+    pub bpm: f32,
+    pub notes: Vec<FallingNoteDTO>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct FallingNoteDTO {
+    pub pitch: u8,
+    pub start_beats: f32,
+    pub duration_beats: f32,
+    pub velocity: Option<u8>,
+    pub part_name: String,
+}
+
 pub async fn ensure_demo_piece() -> ApiResult<MusicPieceDTO> {
     let state = local_state::state().await?;
     let piece_id = MusicPieceId::new_unchecked("demo-twinkle");
@@ -91,6 +112,8 @@ pub async fn ensure_demo_piece() -> ApiResult<MusicPieceDTO> {
 }
 
 pub async fn list_pieces() -> ApiResult<Vec<MusicPieceDTO>> {
+    let _ = crate::watch::refresh_if_dirty().await?;
+
     let state = local_state::state().await?;
     let pieces = state
         .0
@@ -152,6 +175,69 @@ pub async fn list_arrangements(piece_id: &str) -> ApiResult<Vec<ArrangementDTO>>
                 .collect()
         })
         .unwrap_or_default())
+}
+
+pub async fn get_score_preview(
+    piece_id: &str,
+    arrangement_id: &str,
+) -> ApiResult<Option<ScorePreviewDTO>> {
+    let state = local_state::state().await?;
+    let piece_id = MusicPieceId::parse(piece_id).map_err(ApiError::new)?;
+    let arrangement_id = ArrangementId::parse(arrangement_id).map_err(ApiError::new)?;
+    let arrangement = state
+        .0
+        .music
+        .query
+        .get_arrangement(&piece_id, &arrangement_id)
+        .await
+        .map_err(ApiError::from)?;
+
+    Ok(arrangement.map(|arrangement| {
+        let mut notes = Vec::new();
+        for part in &arrangement.score.parts {
+            for note in &part.notes {
+                notes.push(FallingNoteDTO {
+                    pitch: note.pitch.midi_number(),
+                    start_beats: note.span.start.beats,
+                    duration_beats: note.span.duration_beats,
+                    velocity: note.velocity,
+                    part_name: part.name.clone(),
+                });
+            }
+        }
+
+        notes.sort_by(|a, b| {
+            a.start_beats
+                .partial_cmp(&b.start_beats)
+                .unwrap_or(std::cmp::Ordering::Equal)
+                .then(a.pitch.cmp(&b.pitch))
+        });
+
+        let lowest_pitch = notes.iter().map(|note| note.pitch).min().unwrap_or(21);
+        let highest_pitch = notes.iter().map(|note| note.pitch).max().unwrap_or(108);
+        let total_beats = notes
+            .iter()
+            .map(|note| note.start_beats + note.duration_beats)
+            .fold(0.0, f32::max)
+            .max(1.0);
+        let bpm = arrangement
+            .score
+            .tempos
+            .first()
+            .map(|tempo| tempo.bpm)
+            .unwrap_or(120.0);
+
+        ScorePreviewDTO {
+            piece_id: arrangement.piece_id.as_str().to_string(),
+            arrangement_id: arrangement.id.as_str().to_string(),
+            title: arrangement.title,
+            lowest_pitch,
+            highest_pitch,
+            total_beats,
+            bpm,
+            notes: notes.into_iter().take(480).collect(),
+        }
+    }))
 }
 
 fn piece_to_dto(piece: MusicPiece) -> MusicPieceDTO {
