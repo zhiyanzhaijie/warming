@@ -235,7 +235,7 @@ pub async fn get_score_preview(
             highest_pitch,
             total_beats,
             bpm,
-            notes: notes.into_iter().take(480).collect(),
+            notes,
         }
     }))
 }
