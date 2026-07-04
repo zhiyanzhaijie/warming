@@ -45,66 +45,73 @@ pub fn PracticeView(piece_id: String, arrangement_id: String) -> Element {
     });
 
     rsx! {
-        main { class: "min-h-screen bg-background text-foreground",
-            div { class: "mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-5 px-6 py-6 md:px-8",
-                header { class: "flex flex-col gap-4 border-b border-border pb-5 md:flex-row md:items-center md:justify-between",
-                    div { class: "space-y-2",
-                        p { class: "text-xs font-bold uppercase text-chart-3", "Practice" }
-                        h1 { class: "text-3xl font-black leading-none md:text-5xl", "练习模式" }
+        main { class: "h-screen w-screen bg-background text-foreground font-sans flex flex-col overflow-hidden select-none",
+            // 顶栏 - 固定高度
+            header { class: "flex-none h-16 flex items-center justify-between border-b border-border px-6 md:px-8",
+                div { class: "space-y-0.5",
+                    p { class: "text-[10px] font-bold uppercase tracking-[1.5px] text-primary", "Practice Mode" }
+                    h1 { class: "text-lg font-bold tracking-tight", "练习模式" }
+                }
+                div { class: "flex flex-wrap items-center gap-3",
+                    button {
+                        class: "h-9 border border-[#7c7c7c] hover:border-white transition-all bg-transparent px-4 rounded-full text-xs font-bold text-white uppercase tracking-[1px] cursor-pointer hover:scale-104",
+                        onclick: move |_| {
+                            nav.push("/");
+                        },
+                        "Back"
                     }
-                    div { class: "flex flex-wrap gap-2",
-                        button {
-                            class: "h-10 border border-border bg-secondary px-4 text-sm font-bold text-secondary-foreground hover:bg-accent",
-                            onclick: move |_| {
-                                nav.push("/");
-                            },
-                            "Back"
+                    button {
+                        class: "h-10 bg-primary hover:bg-spotify-green-hover hover:scale-104 transition-all duration-150 active:scale-95 px-6 rounded-full text-xs font-bold text-primary-foreground uppercase tracking-[1.5px] shadow-lg shadow-primary/20 flex items-center gap-2 cursor-pointer",
+                        onclick: move |_| {
+                            if playing() {
+                                stop_audio();
+                                playing.set(false);
+                            } else if let Some(Ok(Some(preview))) = preview.read().as_ref() {
+                                start_audio(preview, progress_beats(), speed());
+                                playing.set(true);
+                            }
+                        },
+                        if playing() {
+                            "Pause"
+                        } else {
+                            "Play"
                         }
+                    }
+                }
+            }
+
+            // 速度控制条 - 固定高度，更窄更紧凑
+            section { class: "flex-none h-14 bg-card px-6 border-b border-border/30 flex items-center justify-between shadow-sm",
+                div { class: "flex items-center gap-2",
+                    span { class: "text-[10px] font-bold text-muted-foreground uppercase tracking-[1px] mr-2", "Speed" }
+                    for value in [0.5_f32, 0.75, 1.0, 1.25, 1.5] {
                         button {
-                            class: "h-10 border border-primary bg-primary px-4 text-sm font-bold text-primary-foreground",
+                            class: if (speed() - value).abs() < 0.01 {
+                                "h-8 bg-white px-3.5 rounded-full text-xs font-bold text-background tracking-[0.5px] cursor-pointer"
+                            } else {
+                                "h-8 bg-secondary hover:bg-accent px-3.5 rounded-full text-xs font-bold text-muted-foreground hover:text-white tracking-[0.5px] transition-all cursor-pointer"
+                            },
                             onclick: move |_| {
+                                speed.set(value);
                                 if playing() {
                                     stop_audio();
-                                    playing.set(false);
-                                } else if let Some(Ok(Some(preview))) = preview.read().as_ref() {
-                                    start_audio(preview, progress_beats(), speed());
-                                    playing.set(true);
+                                    if let Some(Ok(Some(preview))) = preview.read().as_ref() {
+                                        start_audio(preview, progress_beats(), value);
+                                    }
                                 }
                             },
-                            if playing() { "Pause" } else { "Play" }
+                            "{value:.2}x"
                         }
                     }
                 }
-
-                section { class: "grid gap-4 border border-border bg-card p-4 shadow-sm md:grid-cols-[1fr_auto]",
-                    div { class: "flex flex-wrap items-center gap-2",
-                        span { class: "text-sm font-bold text-muted-foreground", "Speed" }
-                        for value in [0.5_f32, 0.75, 1.0, 1.25, 1.5] {
-                            button {
-                                class: if (speed() - value).abs() < 0.01 {
-                                    "h-9 border border-chart-3 bg-chart-3/10 px-3 text-sm font-bold text-chart-3"
-                                } else {
-                                    "h-9 border border-border bg-background px-3 text-sm font-bold text-foreground hover:bg-accent"
-                                },
-                                onclick: move |_| {
-                                    speed.set(value);
-                                    if playing() {
-                                        stop_audio();
-                                        if let Some(Ok(Some(preview))) = preview.read().as_ref() {
-                                            start_audio(preview, progress_beats(), value);
-                                        }
-                                    }
-                                },
-                                "{value:.2}x"
-                            }
-                        }
-                    }
-                    div { class: "flex items-center gap-3 text-sm text-muted-foreground",
-                        span { class: if playing() { "h-2.5 w-2.5 rounded-full bg-chart-4" } else { "h-2.5 w-2.5 rounded-full bg-muted-foreground" } }
-                        span { if playing() { "Playing" } else { "Paused" } }
-                    }
+                div { class: "flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-[1px] bg-background px-3.5 py-1.5 rounded-full",
+                    span { class: if playing() { "h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(30,215,96,0.7)] animate-pulse" } else { "h-1.5 w-1.5 rounded-full bg-muted-foreground" } }
+                    span { if playing() { "Playing" } else { "Paused" } }
                 }
+            }
 
+            // 主要练习区 - 100%铺满剩余部分，自适应不产生滚动条
+            div { class: "flex-1 min-h-0 p-4 md:p-6",
                 match preview.read().as_ref() {
                     Some(Ok(Some(preview))) => rsx! {
                         PracticeRoll {
@@ -120,13 +127,13 @@ pub fn PracticeView(piece_id: String, arrangement_id: String) -> Element {
                         }
                     },
                     Some(Ok(None)) => rsx! {
-                        div { class: "border border-border bg-card p-6 text-sm text-muted-foreground", "没有可练习的谱面" }
+                        div { class: "h-full bg-card rounded-lg flex items-center justify-center text-xs font-normal text-muted-foreground border border-border/30 shadow-sm", "没有可练习的谱面" }
                     },
                     Some(Err(err)) => rsx! {
-                        div { class: "border border-border bg-card p-6 text-sm text-destructive", "{err}" }
+                        div { class: "h-full bg-card rounded-lg flex items-center justify-center text-xs font-bold text-destructive border border-border/30 shadow-sm", "{err}" }
                     },
                     None => rsx! {
-                        div { class: "border border-border bg-card p-6 text-sm text-muted-foreground", "Loading practice score" }
+                        div { class: "h-full bg-card rounded-lg flex items-center justify-center text-xs font-normal text-muted-foreground border border-border/30 shadow-sm", "Loading practice score" }
                     },
                 }
             }
@@ -156,25 +163,27 @@ fn PracticeRoll(
         .collect();
 
     rsx! {
-        section { class: "overflow-hidden border border-border bg-card shadow-sm",
-            div { class: "flex flex-col gap-2 border-b border-border px-5 py-4 md:flex-row md:items-center md:justify-between",
-                div {
-                    h2 { class: "text-xl font-black", "{preview.title}" }
-                    p { class: "text-sm text-muted-foreground",
+        div { class: "h-full w-full bg-card rounded-lg border border-border/30 shadow-heavy flex flex-col overflow-hidden",
+            // 钢琴卷帘小控制条
+            div { class: "flex-none flex flex-col gap-2 border-b border-border px-5 py-3 md:flex-row md:items-center md:justify-between bg-[#181818]",
+                div { class: "min-w-0",
+                    h2 { class: "text-sm font-bold text-white truncate", "{preview.title}" }
+                    p { class: "text-[10px] font-normal text-muted-foreground",
                         "Range {low}-{high} · {preview.notes.len()} notes · {total_beats:.1} beats · {preview.bpm:.0} BPM · speed {speed:.2}x"
                     }
                 }
-                div { class: "text-sm font-bold text-chart-3",
+                div { class: "flex-none text-[10px] font-bold text-primary uppercase tracking-[1px]",
                     if playing { "落键预览运行中" } else { "已暂停" }
                 }
             }
-            div { class: "grid gap-2 border-b border-border px-5 py-4",
-                div { class: "flex items-center justify-between text-xs font-bold text-muted-foreground",
+            // 播放进度控制
+            div { class: "flex-none grid gap-1 border-b border-border px-5 py-2.5 bg-[#1c1c1c]",
+                div { class: "flex items-center justify-between text-[10px] font-bold text-muted-foreground uppercase tracking-[1px]",
                     span { "Progress" }
-                    span { "{progress_beats:.1} / {total_beats:.1} beats" }
+                    span { class: "text-white font-mono", "{progress_beats:.1} / {total_beats:.1} beats" }
                 }
                 input {
-                    class: "w-full accent-[var(--chart-3)]",
+                    class: "w-full accent-primary cursor-pointer h-1 bg-border rounded-lg appearance-none",
                     r#type: "range",
                     min: "0",
                     max: "1000",
@@ -187,23 +196,28 @@ fn PracticeRoll(
                 }
             }
 
-            div { class: "relative h-[62vh] min-h-[520px] overflow-hidden bg-background",
-                div { class: "absolute bottom-20 left-0 right-0 z-20 border-t-2 border-chart-3" }
-                div { class: "absolute bottom-0 left-0 right-0 z-10 h-20 border-t border-border bg-card" }
+            // 钢琴卷帘容器 - 重点：用 flex-1 填满所有高度，内部绝对定位
+            div { class: "flex-1 min-h-0 relative bg-[#121212]",
+                // 落键接触线
+                div { class: "absolute bottom-16 left-0 right-0 z-20 border-t-2 border-primary shadow-[0_0_12px_rgba(30,215,96,0.3)]" }
+                // 键盘背景
+                div { class: "absolute bottom-0 left-0 right-0 z-10 h-16 border-t border-border bg-card" }
 
+                // 拍子背景刻度
                 for beat in beat_markers(progress_beats, total_beats) {
                     div {
-                        class: "absolute left-0 right-0 border-t border-border/70",
+                        class: "absolute left-0 right-0 border-t border-border/40",
                         style: "top: {beat_to_top_percent(beat, progress_beats):.3}%;",
                     }
                 }
 
+                // 独立音符落子
                 for note in preview.notes.iter().filter(|note| is_visible_note(note, progress_beats)) {
                     div {
                         class: if is_black_key(note.pitch) {
-                            "absolute rounded-sm bg-foreground shadow-sm"
+                            "absolute rounded-sm bg-white shadow-sm"
                         } else {
-                            "absolute rounded-sm border border-chart-3/70 bg-chart-3/80 shadow-sm"
+                            "absolute rounded-sm border border-primary/40 bg-primary/85 shadow-md shadow-primary/10"
                         },
                         title: "{note.part_name} · {note.pitch}",
                         style: note_style(note, low, pitch_span, progress_beats),
@@ -211,18 +225,19 @@ fn PracticeRoll(
                 }
             }
 
-            div { class: "relative flex h-20 border-t border-border bg-card px-4 pb-4 pt-2",
+            // 底部琴键区 - 高度固定 16
+            div { class: "flex-none relative flex h-16 border-t border-border bg-card px-3 pb-3 pt-1.5",
                 for key in white_keys {
                     div { class: if active_pitches.contains(&key) {
-                            "relative min-w-0 flex-1 border border-chart-3 bg-chart-3/30"
+                            "relative min-w-0 flex-1 border border-primary bg-primary/20 rounded-b-sm"
                         } else {
-                            "relative min-w-0 flex-1 border border-border bg-background"
+                            "relative min-w-0 flex-1 border border-border bg-background rounded-b-sm"
                         },
-                        span { class: "absolute bottom-1 left-1/2 -translate-x-1/2 text-[10px] text-muted-foreground",
+                        span { class: "absolute bottom-0.5 left-1/2 -translate-x-1/2 text-[8px] font-bold text-muted-foreground",
                             "{pitch_label(key)}"
                         }
                         if key < high && is_black_key(key + 1) {
-                            div { class: "absolute -right-[18%] top-0 z-10 h-11 w-[36%] bg-foreground" }
+                            div { class: "absolute -right-[18%] top-0 z-10 h-8 w-[36%] bg-white rounded-b-xs" }
                         }
                     }
                 }
@@ -241,13 +256,13 @@ fn note_style(
     let left = ((note.pitch.saturating_sub(low) as f32 / pitch_span) * 96.0 + 2.0).clamp(0.0, 97.0);
     let width = (92.0 / pitch_span).clamp(0.45, 5.0);
     let top = beat_to_top_percent(note.start_beats, progress_beats);
-    let height = (note.duration_beats / VISIBLE_BEATS * 82.0).clamp(1.0, 44.0);
+    let height = (note.duration_beats / VISIBLE_BEATS * 75.0).clamp(1.0, 44.0);
     format!("left: {left:.3}%; top: {top:.3}%; width: {width:.3}%; height: {height:.3}%;")
 }
 
 fn beat_to_top_percent(beat: f32, progress_beats: f32) -> f32 {
     const VISIBLE_BEATS: f32 = 16.0;
-    86.0 - ((beat - progress_beats) / VISIBLE_BEATS * 82.0)
+    79.0 - ((beat - progress_beats) / VISIBLE_BEATS * 75.0)
 }
 
 fn beat_markers(progress_beats: f32, total_beats: f32) -> Vec<f32> {
@@ -336,8 +351,7 @@ fn start_audio(preview: &api::music::ScorePreviewDTO, start_beat: f32, speed: f3
                 const beat = Math.min(totalBeats, startBeat + ((nowMs() - startedAtMs) / 1000) / secondsPerBeat);
                 window.dispatchEvent(new CustomEvent("warming-practice-tick", {{ detail: {{ beat, ended: beat >= totalBeats }} }}));
                 if (beat >= totalBeats) window.__warmingAudioStop?.();
-            }};
-
+            }}
             const timer = setInterval(sendTick, 33);
             sendTick();
             window.__warmingAudioStop = () => {{

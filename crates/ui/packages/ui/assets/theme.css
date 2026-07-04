@@ -15,36 +15,58 @@
   --color-border: var(--border);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
+  --color-spotify-green: var(--spotify-green);
+  --color-spotify-green-hover: var(--spotify-green-hover);
+  --color-near-black: var(--near-black);
+  --color-dark-surface: var(--dark-surface);
+  --color-mid-dark: var(--mid-dark);
+  --color-dark-card: var(--dark-card);
+  --color-silver: var(--silver);
+  --color-near-white: var(--near-white);
+  --shadow-heavy: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-medium: 0 8px 8px rgba(0, 0, 0, 0.3);
 }
 
 @layer base {
   :root {
-    --background: #f5f1e8;
-    --foreground: #191713;
-    --card: #fffcf5;
-    --card-foreground: #191713;
-    --primary: #191713;
-    --primary-foreground: #fffcf5;
-    --secondary: rgba(25, 23, 19, 0.05);
-    --secondary-foreground: #191713;
-    --muted: rgba(25, 23, 19, 0.05);
-    --muted-foreground: #686155;
-    --accent: rgba(25, 23, 19, 0.07);
-    --accent-foreground: #191713;
-    --destructive: #b42318;
-    --border: #e7dfd1;
-    --chart-3: #b86b10;
-    --chart-4: #0f7a4d;
-    font-family: "Avenir Next", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+    --background: #121212;
+    --foreground: #ffffff;
+    --card: #181818;
+    --card-foreground: #ffffff;
+    --primary: #1ed760;
+    --primary-foreground: #000000;
+    --secondary: #1f1f1f;
+    --secondary-foreground: #ffffff;
+    --muted: #1f1f1f;
+    --muted-foreground: #b3b3b3;
+    --accent: #252525;
+    --accent-foreground: #ffffff;
+    --destructive: #f3727f;
+    --border: #272727;
+    --chart-3: #ffa42b;
+    --chart-4: #539df5;
+
+    /* Spotify specific variables */
+    --spotify-green: #1ed760;
+    --spotify-green-hover: #1fdf64;
+    --near-black: #121212;
+    --dark-surface: #181818;
+    --mid-dark: #1f1f1f;
+    --dark-card: #252525;
+    --silver: #b3b3b3;
+    --near-white: #cbcbcb;
+
+    font-family: SpotifyMixUI, CircularSp-Arab, CircularSp-Hebr, CircularSp-Cyrl, CircularSp-Grek, CircularSp-Deva, "Helvetica Neue", helvetica, arial, "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, "MS Gothic", ui-sans-serif, system-ui, sans-serif;
   }
 
   body {
-    background:
-      linear-gradient(90deg, rgba(25, 23, 19, 0.035) 1px, transparent 1px),
-      linear-gradient(180deg, rgba(25, 23, 19, 0.035) 1px, transparent 1px),
-      var(--background);
-    background-size: 44px 44px;
+    background-color: var(--background);
     color: var(--foreground);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
   }
 
   button,

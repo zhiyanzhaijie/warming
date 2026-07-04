@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use ui::views::{HomeView, PracticeView};
+use ui::views::{HomeView, PracticeView, SettingsView};
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
@@ -9,6 +9,8 @@ enum Route {
     HomeView {},
     #[route("/practice/:piece_id/:arrangement_id")]
     PracticeView { piece_id: String, arrangement_id: String },
+    #[route("/settings")]
+    SettingsView {},
 }
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
